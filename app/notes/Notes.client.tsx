@@ -48,16 +48,13 @@ function NotesInner() {
     debounced(value);
   };
 
-  const { data, isLoading, isFetching, error } = useQuery<FetchNotesResponse, Error>({
-    queryKey: ["notes", currentPage, debouncedSearch],
-    queryFn: () => fetchNotes(currentPage, perPage, debouncedSearch),
-    staleTime: 60_000, 
-    placeholderData: () => ({
-      notes: [],
-      totalPages: 0,
-    }),
-  });
-
+const { data, isLoading, isFetching, error } = useQuery<FetchNotesResponse, Error>({
+  queryKey: ["notes", currentPage, debouncedSearch],
+  queryFn: () => fetchNotes(currentPage, perPage, debouncedSearch),
+  staleTime: 60_000,
+  placeholderData: (previousData) => previousData, 
+});
+  
   const notes: FetchNotesResponse["notes"] = data?.notes ?? [];
   const totalPages: number = data?.totalPages ?? 0;
 
