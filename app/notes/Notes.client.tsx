@@ -12,7 +12,7 @@ import SearchBox from "../../components/SearchBox/SearchBox";
 import css from "./Notes.module.css";
 
 interface NotesClientProps {
-  dehydratedState: unknown;
+  dehydratedState?: unknown;
 }
 
 export default function NotesClient({ dehydratedState }: NotesClientProps) {
@@ -48,14 +48,18 @@ function NotesInner() {
     debounced(value);
   };
 
-  const { data, isLoading, isFetching, error } = useQuery<FetchNotesResponse>({
+  const { data, isLoading, isFetching, error } = useQuery<FetchNotesResponse, Error>({
     queryKey: ["notes", currentPage, debouncedSearch],
     queryFn: () => fetchNotes(currentPage, perPage, debouncedSearch),
-    staleTime: 1000 * 60,
+    staleTime: 60_000, 
+    placeholderData: () => ({
+      notes: [],
+      totalPages: 0,
+    }),
   });
 
-  const notes = data?.notes ?? [];
-  const totalPages = data?.totalPages ?? 0;
+  const notes: FetchNotesResponse["notes"] = data?.notes ?? [];
+  const totalPages: number = data?.totalPages ?? 0;
 
   return (
     <div className={css.app}>
